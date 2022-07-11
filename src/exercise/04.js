@@ -4,37 +4,31 @@
 import * as React from 'react'
 
 function Board() {
-  // 🐨 squares is the state for this component. Add useState for squares
-  const [squares, setSquares] = React.useState(Array(9).fill(null));
+  const [squares, setSquares] = React.useState(() => {
+    const valueInLocalStorage = window.localStorage.getItem('squares');
+    if (valueInLocalStorage){
+      return JSON.parse(valueInLocalStorage);
+    } else {
+      return Array(9).fill(null);
+    }
+    });
 
-  // 🐨 We'll need the following bits of derived state:
-  // - nextValue ('X' or 'O')
-  // - winner ('X', 'O', or null)
-  // - status (`Winner: ${winner}`, `Scratch: Cat's game`, or `Next player: ${nextValue}`)
-  // 💰 I've written the calculations for you! So you can use my utilities
-  // below to create these variables
-  const [nextValue, setNextValue] = React.useState(calculateNextValue(squares));
-  const [winner, setWinner] = React.useState(calculateWinner(squares));
-  const [status, setStatus] = React.useState(calculateStatus(winner, squares, nextValue));
+  const nextValue = calculateNextValue(squares);
+  const winner = calculateWinner(squares);
+  const status = calculateStatus(winner, squares, nextValue);
 
+  React.useEffect(()=> {
+    window.localStorage.setItem('squares', JSON.stringify(squares));
+  }, [squares])
   // This is the function your square click handler will call. `square` should
   // be an index. So if they click the center square, this will be `4`.
   function selectSquare(square) {
-    // 🐨 first, if there's already winner or there's already a value at the
-    // given square index (like someone clicked a square that's already been
-    // clicked), then return early so we don't make any state changes
     if(winner || squares[square]){
       return null;
     } else {
       const squaresCopy = [...squares];
       squaresCopy[square] = nextValue;
-      const newNextValue = calculateNextValue(squaresCopy);
-      const newWinner = calculateWinner(squaresCopy);
-      const newStatus = calculateStatus(newWinner, squaresCopy, nextValue);
       setSquares(squaresCopy);
-      setNextValue(newNextValue);
-      setWinner(newWinner);
-      setStatus(newStatus);
     }
 
     // 🦉 It's typically a bad idea to mutate or directly change state in React.

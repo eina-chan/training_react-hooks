@@ -17,7 +17,7 @@ function Tilt({children}) {
       glare: true,
       'max-glare': 0.5,
     });
-    return () => tiltNode.vanillaTilt.destroy();
+    return function cleanup () {tiltNode.vanillaTilt.destroy()};
   }, [])
 
   // 🐨 add a `React.useEffect` callback here and use VanillaTilt to make your

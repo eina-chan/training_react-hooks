@@ -4,38 +4,10 @@
 import * as React from 'react'
 import { useLocalStorageState } from '../utils';
 
-function Board() {
-  const [squares, setSquares] = useLocalStorageState('squares', Array(9).fill(null));
-
-  const nextValue = calculateNextValue(squares);
-  const winner = calculateWinner(squares);
-  const status = calculateStatus(winner, squares, nextValue);
-
-  // This is the function your square click handler will call. `square` should
-  // be an index. So if they click the center square, this will be `4`.
-  function selectSquare(square) {
-    if(winner || squares[square]){
-      return null;
-    } else {
-      const squaresCopy = [...squares];
-      squaresCopy[square] = nextValue;
-      setSquares(squaresCopy);
-    }
-
-    // 🦉 It's typically a bad idea to mutate or directly change state in React.
-    // Doing so can lead to subtle bugs that can easily slip into production.
-    //
-    // 🐨 make a copy of the squares array
-    // 💰 `[...squares]` will do it!)
-  }
-
-  function restart() {
-    setSquares(Array(9).fill(null));
-  }
-
+function Board({onClick, squares}) {
   function renderSquare(i) {
     return (
-      <button className="square" onClick={() => selectSquare(i)}>
+      <button className="square" onClick={() => onClick(i)}>
         {squares[i]}
       </button>
     )
@@ -43,7 +15,6 @@ function Board() {
 
   return (
     <div>
-      <div className="status">{status}</div>
       <div className="board-row">
         {renderSquare(0)}
         {renderSquare(1)}
@@ -59,18 +30,68 @@ function Board() {
         {renderSquare(7)}
         {renderSquare(8)}
       </div>
-      <button className="restart" onClick={restart}>
-        restart
-      </button>
     </div>
   )
 }
 
 function Game() {
+  const [currentStep, setCurrentStep] = useLocalStorageState('tic-tac-toe:step', 0);
+  const [history, setHistory] = useLocalStorageState('tic-tac-toe:history', [Array(9).fill(null)]);
+  const currentSquares = history[currentStep];
+  
+  const nextValue = calculateNextValue(currentSquares);
+  const winner = calculateWinner(currentSquares);
+  const status = calculateStatus(winner, currentSquares, nextValue);
+  
+
+
+
+  function selectSquare(currentSquare) {
+    if(winner || currentSquares[currentSquare]){
+      return;
+    } else {
+      const newHistory = history.slice(0, currentStep + 1); // Gives a copy of the history to only give history to current step because this function is when user choses an alt move 
+      const squaresCopy = [...currentSquares];
+      squaresCopy[currentSquare] = nextValue;
+      setHistory([...newHistory,squaresCopy]);
+      setCurrentStep(newHistory.length);
+    }
+  }
+
+  const moves = history.map((stepSquares, index) => {
+    const desc = index === 0 ? 'Go to game start' : `Go to move #${index}`;
+    const isCurrentStep = index === currentStep;
+    return(
+      <li key={`move-${index}`}>
+        <button disabled={isCurrentStep} onClick={()=> setCurrentStep(index)}>
+          {desc} {isCurrentStep ? '(current)' : null}
+        </button>
+      </li>
+    )});
+
+
+  function restart() {
+    setHistory([Array(9).fill(null)]);
+    setCurrentStep(0);
+  }
+  // return (
+  //   <div className="game">
+  //     <div className="game-board">
+  //       <Board />
+  //     </div>
+  //   </div>
+  // )
   return (
     <div className="game">
       <div className="game-board">
-        <Board />
+        <Board onClick={selectSquare} squares={currentSquares} />
+        <button className="restart" onClick={restart}>
+          restart
+        </button>
+      </div>
+      <div className="game-info">
+        <div>{status}</div>
+        <ol>{moves}</ol>
       </div>
     </div>
   )

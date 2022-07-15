@@ -12,17 +12,18 @@ const Status = {
 };
 
 function PokemonInfo({pokemonName}) {
-  const [ pokemon, setPokemon ] = React.useState(null);
-  const [ status, setStatus ] = React.useState(Status.Idle);
+  const [ state, setState ] = React.useState({status: Status.Idle, pokemon: null});
   const [ error, setError ] = React.useState(null);
+  const { status, pokemon } = state;
+
  
   React.useEffect(()=> {
     if (!pokemonName){
       return;
     } else {
-      setStatus(Status.Pending);
+      setState({status: Status.Pending});
       fetchPokemon(pokemonName)
-      .then(pokemonData => {setPokemon(pokemonData); setStatus(Status.Resolved)}, error => {setError(error); setStatus(Status.Rejected)})
+      .then(pokemonData => {setState({status: Status.Resolved, pokemon: pokemonData})}, error => {setError(error); setState({status: Status.Rejected})})
     }
   }, [pokemonName]);
 

@@ -4,8 +4,16 @@
 import * as React from 'react'
 import {fetchPokemon, PokemonForm, PokemonInfoFallback, PokemonDataView} from '../pokemon'
 
+const Status = {
+  Idle: "idle",
+  Pending: "pending",
+  Resolved: "resloved",
+  Rejected: "rejected",
+};
+
 function PokemonInfo({pokemonName}) {
   const [pokemon, setPokemon] = React.useState(null);
+  const [ status, setStatus ] = React.useState(Status.Idle);
   const [error, setError] = React.useState(null);
  
   React.useEffect(()=> {
@@ -13,20 +21,21 @@ function PokemonInfo({pokemonName}) {
       return;
     } else {
       setPokemon(null);
+      setStatus(Status.Pending);
       fetchPokemon(pokemonName)
-      .then(pokemonData => setPokemon(pokemonData), error => setError(error))
+      .then(pokemonData => {setPokemon(pokemonData); setStatus(Status.Resolved)}, error => {setError(error); setStatus(Status.Rejected)})
     }
   }, [pokemonName]);
 
-  if (error) {
+  if (status === Status.Rejected) {
     return (
       <div role="alert">
         There was an error: <pre style={{whiteSpace: 'normal'}}>{error.message}</pre>
       </div>
     )
-  } else if (!pokemonName) {
+  } else if (status === Status.Idle) {
     return 'Submit a pokemon';
-  } else if(!pokemon){
+  } else if(status === Status.Pending){
       return <PokemonInfoFallback name={pokemonName} />
 
   } else {

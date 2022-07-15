@@ -12,15 +12,14 @@ const Status = {
 };
 
 function PokemonInfo({pokemonName}) {
-  const [pokemon, setPokemon] = React.useState(null);
+  const [ pokemon, setPokemon ] = React.useState(null);
   const [ status, setStatus ] = React.useState(Status.Idle);
-  const [error, setError] = React.useState(null);
+  const [ error, setError ] = React.useState(null);
  
   React.useEffect(()=> {
     if (!pokemonName){
       return;
     } else {
-      setPokemon(null);
       setStatus(Status.Pending);
       fetchPokemon(pokemonName)
       .then(pokemonData => {setPokemon(pokemonData); setStatus(Status.Resolved)}, error => {setError(error); setStatus(Status.Rejected)})
@@ -38,7 +37,7 @@ function PokemonInfo({pokemonName}) {
   } else if(status === Status.Pending){
       return <PokemonInfoFallback name={pokemonName} />
 
-  } else {
+  } else if(status === Status.Resolved){
       return <PokemonDataView pokemon={pokemon} />
   }
 }

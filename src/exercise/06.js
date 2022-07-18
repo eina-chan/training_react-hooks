@@ -51,7 +51,7 @@ const Status = {
 
 function PokemonInfo({pokemonName}) {
   const [ state, setState ] = React.useState({
-    status: Status.Idle, 
+    status: pokemonName ? Status.Pending : Status.Idle, 
     pokemon: null,
     error: null,
   });
@@ -114,7 +114,7 @@ function App() {
       <PokemonForm pokemonName={pokemonName} onSubmit={handleSubmit} />
       <hr />
       <div className="pokemon-info">
-        <ErrorBoundary FallbackComponent={ErrorFallback} onReset={()=> setPokemonName('')}>
+        <ErrorBoundary FallbackComponent={ErrorFallback} onReset={()=> setPokemonName('')}> {/* reset instead of key prevents unneccessary mounting and unmounting */}
           <PokemonInfo pokemonName={pokemonName} />
         </ErrorBoundary>
       </div>

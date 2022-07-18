@@ -7,26 +7,35 @@ import {fetchPokemon, PokemonForm, PokemonInfoFallback, PokemonDataView} from '.
 class ErrorBoundary extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { hasError: false };
+    this.state = { error: null };
   }
+
+  // Can be simplified to just:
+  // state = { error: null };
 
   static getDerivedStateFromError(error) {
     // Update state so the next render will show the fallback UI.
-    return { hasError: true };
+    return { error };
   }
 
+  // Not required
   componentDidCatch(error, errorInfo) {
     // You can also log the error to an error reporting service
     console.log(error, errorInfo);
   }
 
   render() {
-    if (this.state.hasError) {
+    if (this.state.error) {
       // You can render any custom fallback UI
-      return <h1>Something went wrong.</h1>;
+      // return <h1>Something went wrong.</h1>;
+      return (
+        <div role="alert">
+          There was an error: <pre style={{whiteSpace: 'normal'}}>{this.state.error.message}</pre>
+        </div>
+      );
+    } else {
+      return this.props.children; 
     }
-
-    return this.props.children; 
   }
 }
 
@@ -64,6 +73,7 @@ function PokemonInfo({pokemonName}) {
   }, [pokemonName]);
 
   if (status === Status.Rejected) {
+    // This will now be handled by our error boundary
     throw error;
     // return (
     //   <div role="alert">

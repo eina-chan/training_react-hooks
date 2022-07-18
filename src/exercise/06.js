@@ -1,45 +1,46 @@
 // useEffect: HTTP requests
 // http://localhost:3000/isolated/exercise/06.js
 
-import * as React from 'react'
-import {fetchPokemon, PokemonForm, PokemonInfoFallback, PokemonDataView} from '../pokemon'
+import * as React from 'react';
+import {fetchPokemon, PokemonForm, PokemonInfoFallback, PokemonDataView} from '../pokemon';
+import { ErrorBoundary } from 'react-error-boundary';
 
-class ErrorBoundary extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = { error: null };
-  }
+// class ErrorBoundary extends React.Component {
+//   constructor(props) {
+//     super(props);
+//     this.state = { error: null };
+//   }
 
-  // Can be simplified to just:
-  // state = { error: null };
+//   // Can be simplified to just:
+//   // state = { error: null };
 
-  static getDerivedStateFromError(error) {
-    // Update state so the next render will show the fallback UI.
-    return { error };
-  }
+//   static getDerivedStateFromError(error) {
+//     // Update state so the next render will show the fallback UI.
+//     return { error };
+//   }
 
-  // Not required... can console log within render; used in React docs because of custom log system
-  componentDidCatch(error, errorInfo) {
-    // You can also log the error to an error reporting service
-    console.log(error, errorInfo);
-  }
+//   // Not required... can console log within render; used in React docs because of custom log system
+//   componentDidCatch(error, errorInfo) {
+//     // You can also log the error to an error reporting service
+//     console.log(error, errorInfo);
+//   }
 
-  render() {
-    // may destructure "error" e.g. const {error} = this.state;
-    if (this.state.error) {
-      // You can render any custom fallback UI
-      // return <h1>Something went wrong.</h1>;
-      return (
-        <this.props.FallbackComponent error={this.state.error} />
-        // <div role="alert">
-        //   There was an error: <pre style={{whiteSpace: 'normal'}}>{this.state.error.message}</pre>
-        // </div>
-      );
-    } else {
-      return this.props.children; // Because is a wrapper component
-    }
-  }
-}
+//   render() {
+//     // may destructure "error" e.g. const {error} = this.state;
+//     if (this.state.error) {
+//       // You can render any custom fallback UI
+//       // return <h1>Something went wrong.</h1>;
+//       return (
+//         <this.props.FallbackComponent error={this.state.error} />
+//         // <div role="alert">
+//         //   There was an error: <pre style={{whiteSpace: 'normal'}}>{this.state.error.message}</pre>
+//         // </div>
+//       );
+//     } else {
+//       return this.props.children; // Because is a wrapper component
+//     }
+//   }
+// }
 
 const Status = {
   Idle: "idle",

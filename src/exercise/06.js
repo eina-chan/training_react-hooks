@@ -18,23 +18,25 @@ class ErrorBoundary extends React.Component {
     return { error };
   }
 
-  // Not required
+  // Not required... can console log within render; used in React docs because of custom log system
   componentDidCatch(error, errorInfo) {
     // You can also log the error to an error reporting service
     console.log(error, errorInfo);
   }
 
   render() {
+    // may destructure "error" e.g. const {error} = this.state;
     if (this.state.error) {
       // You can render any custom fallback UI
       // return <h1>Something went wrong.</h1>;
       return (
-        <div role="alert">
-          There was an error: <pre style={{whiteSpace: 'normal'}}>{this.state.error.message}</pre>
-        </div>
+        <this.props.FallbackComponent error={this.state.error} />
+        // <div role="alert">
+        //   There was an error: <pre style={{whiteSpace: 'normal'}}>{this.state.error.message}</pre>
+        // </div>
       );
     } else {
-      return this.props.children; 
+      return this.props.children; // Because is a wrapper component
     }
   }
 }
@@ -90,6 +92,14 @@ function PokemonInfo({pokemonName}) {
   }
 }
 
+function ErrorFallback({error}) {
+  return (
+    <div role="alert">
+    There was an error: <pre style={{whiteSpace: 'normal'}}>{error.message}</pre>
+  </div>
+  );
+};
+
 function App() {
   const [pokemonName, setPokemonName] = React.useState('')
 
@@ -102,7 +112,7 @@ function App() {
       <PokemonForm pokemonName={pokemonName} onSubmit={handleSubmit} />
       <hr />
       <div className="pokemon-info">
-        <ErrorBoundary key={pokemonName}>
+        <ErrorBoundary FallbackComponent={ErrorFallback} key={pokemonName}>
           <PokemonInfo pokemonName={pokemonName} />
         </ErrorBoundary>
       </div>
